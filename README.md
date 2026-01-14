@@ -56,10 +56,6 @@ npm run dev
 - **Auth**: JWT
 - **Styling**: CSS/Tailwind
 
-## 📝 Git Workflow
-
-Kiekviena funkcija = naujas branch + commit po to dėti į main
-
 ---
 
 **Pradžia**: 2026-01-12 | **Versija**: 0.1.0
