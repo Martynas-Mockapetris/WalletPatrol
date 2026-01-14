@@ -1,4 +1,5 @@
 import API from './api';
+import { setToken, clearToken } from '../utils/token';
 
 // Service for handling user authentication (register, login, logout)
 const authService = {
@@ -16,7 +17,7 @@ const authService = {
       // If backend returns token, save it to localStorage
       // Interceptor will use it for future requests
       if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
+        setToken(response.data.token);
       }
 
       return response.data;
@@ -37,7 +38,7 @@ const authService = {
 
       // If backend returns token, save it to localStorage
       if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
+        setToken(response.data.token);
       }
 
       return response.data;
@@ -46,10 +47,12 @@ const authService = {
     }
   },
 
+  me: async () => API.get('/auth/me'),
+
   // Logout: Remove user session
   // Removes token from localStorage - user will be logged out
   logout: () => {
-    localStorage.removeItem('token');
+    clearToken();
   }
 };
 

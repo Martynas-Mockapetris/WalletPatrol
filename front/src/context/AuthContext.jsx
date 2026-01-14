@@ -1,5 +1,6 @@
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 import authService from '../services/authService';
+import { getToken, setToken, clearToken } from '../utils/token';
 
 // Create context for authentication state
 const AuthContext = createContext();
@@ -9,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null); // Logged-in user data
   const [loading, setLoading] = useState(false); // Loading state during requests
   const [error, setError] = useState(null); // Error messages
+  const [initializing, setInitializing] = useState(true);
 
   // Register: Create new user account
   const register = async (name, email, password) => {
@@ -48,20 +50,44 @@ export const AuthProvider = ({ children }) => {
     setUser(null); // Clear user from state
   };
 
+  // Persist user session on page refresh
+  useEffect(() => {
+    const token = getToken();
+    if (!token) {
+      setInitializing(false);
+      return;
+    }
+
+    (async () => {
+      try {
+        const { data } = await authService.me();
+        setUser(data.user); // real user from backend
+      } catch (err) {
+        clearToken(); // bad token, clear it
+        setUser(null);
+      } finally {
+        setInitializing(false);
+      }
+    })();
+  }, []);
+
   // Check if user is authenticated
   const isAuthenticated = !!user;
 
   // Provide auth state and functions to all components
   return (
-    <AuthContext.Provider value={{
-      user,
-      loading,
-      error,
-      register,
-      login,
-      logout,
-      isAuthenticated
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        error,
+        initializing,
+        register,
+        login,
+        logout,
+        isAuthenticated
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

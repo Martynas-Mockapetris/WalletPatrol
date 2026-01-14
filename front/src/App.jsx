@@ -6,14 +6,18 @@ import Dashboard from './pages/Dashboard';
 
 // Protected route - only logged in users can access
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, initializing } = useAuth();
 
-  // If not authenticated, redirect to login
+  // Wait for token check to finish
+  if (initializing) {
+    return <div>Loading...</div>; // Show loading while checking token
+  }
+
+  // If not authenticated after check, redirect
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
 
-  // If authenticated, show the component
   return children;
 };
 

@@ -1,13 +1,13 @@
 import axios from 'axios';
+import { getToken } from '../utils/token'; // use helper
 
-// Create axios instance pointing to backend
 const API = axios.create({
   baseURL: 'http://localhost:4000/api'
 });
 
-// Interceptor: Automatically add JWT to every request
+// Interceptor: add JWT if present
 API.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = getToken(); // read via helper
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

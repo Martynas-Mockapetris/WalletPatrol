@@ -25,15 +25,11 @@ export const register = async (req, res) => {
     const user = await User.create({
       name,
       email,
-      password: hashedPassword,
+      password: hashedPassword
     });
 
     // Generate JWT token (expires in 7 days)
-    const token = jwt.sign(
-      { id: user._id }, 
-      process.env.JWT_SECRET, 
-      { expiresIn: '7d' }
-    );
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
     // Send response
     res.status(201).json({
@@ -41,9 +37,9 @@ export const register = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email,
+        email: user.email
       },
-      token,
+      token
     });
   } catch (err) {
     console.error('Register error:', err.message);
@@ -74,11 +70,7 @@ export const login = async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign(
-      { id: user._id }, 
-      process.env.JWT_SECRET, 
-      { expiresIn: '7d' }
-    );
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
     // Send response
     res.status(200).json({
@@ -86,12 +78,25 @@ export const login = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email,
+        email: user.email
       },
-      token,
+      token
     });
   } catch (err) {
     console.error('Login error:', err.message);
     res.status(500).json({ message: 'Server error during login' });
+  }
+};
+
+// Get current user (no password)
+export const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json({ user });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
   }
 };
