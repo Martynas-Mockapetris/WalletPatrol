@@ -33,6 +33,7 @@ WalletPatrol/
 ## 🚀 Pradžia
 
 ### Front'e (Vite React):
+
 ```bash
 cd front
 npm install
@@ -40,6 +41,7 @@ npm run dev
 ```
 
 ### Server'yje (Express):
+
 ```bash
 cd server
 npm install

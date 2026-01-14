@@ -1,19 +1,55 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import cors from 'cors';
 
+// Nuskaitome environment kintamuosius iš .env failo
 dotenv.config();
 
 const app = express();
 
-// Middleware
+// ========== MIDDLEWARE ==========
+// CORS - leidžia frontend (iš kito porto) pasiekti mūsų API
+app.use(cors());
+
+// JSON parser - konvertuoja incoming request body į JSON
+app.use(express.json());
+
+// Logging middleware - rodo kiekvieno request'o informaciją
 app.use((req, res, next) => {
-  console.log(req.path, req.method);
+  console.log(`[${new Date().toLocaleTimeString()}] ${req.method} ${req.path}`);
   next();
 });
 
-// Routes
+// ========== DATABASE CONNECTION ==========
+// Connect to MongoDB using the MONGO_URI from .env
+const MONGO_URI = process.env.MONGO_URI;
+
+mongoose
+  .connect(MONGO_URI)
+  .then(() => {
+    console.log('MongoDB connected successfully');
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error:', err.message);
+  });
+
+// ========== ROUTES ==========
+// Import auth routes
+import authRoutes from './routes/auth.js';
+
+// Mount auth routes at /api/auth
+app.use('/api/auth', authRoutes);
+
+// Import transaction routes
+import transactionRoutes from './routes/transactions.js';
+
+// Mount transaction routes at /api/transactions
+app.use('/api/transactions', transactionRoutes);
+
+// Health check route
 app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to the app' });
+  res.json({ message: 'Welcome to WalletPatrol' });
 });
 
 // Listen to requests

@@ -1,3 +1,4 @@
+// src/App.jsx - pagrindinis WalletPatrol komponentas
 import React from 'react';
 
 export default function App() {
