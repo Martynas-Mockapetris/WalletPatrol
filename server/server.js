@@ -41,6 +41,12 @@ import authRoutes from './routes/auth.js';
 // Mount auth routes at /api/auth
 app.use('/api/auth', authRoutes);
 
+// Import transaction routes
+import transactionRoutes from './routes/transactions.js';
+
+// Mount transaction routes at /api/transactions
+app.use('/api/transactions', transactionRoutes);
+
 // Health check route
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to WalletPatrol' });
