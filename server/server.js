@@ -34,9 +34,16 @@ mongoose
     console.error('MongoDB connection error:', err.message);
   });
 
-// Routes
+// ========== ROUTES ==========
+// Import auth routes
+import authRoutes from './routes/auth.js';
+
+// Mount auth routes at /api/auth
+app.use('/api/auth', authRoutes);
+
+// Health check route
 app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to the app' });
+  res.json({ message: 'Welcome to WalletPatrol' });
 });
 
 // Listen to requests
