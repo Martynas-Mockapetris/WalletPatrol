@@ -17,7 +17,15 @@ export default function Dashboard() {
   });
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editForm, setEditForm] = useState({
+    date: '',
+    amount: '',
+    type: 'expense',
+    comment: ''
+  });
 
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -29,6 +37,7 @@ export default function Dashboard() {
     navigate('/login');
   };
 
+  // Handle form submission to add new transaction
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -47,6 +56,61 @@ export default function Dashboard() {
     }
   };
 
+  // Handle delete transaction
+  const handleDelete = async (id) => {
+    try {
+      await transactionService.remove(id);
+      // Remove from local state
+      setTransactions((prev) => prev.filter((tx) => tx._id !== id));
+    } catch (err) {
+      setErrorTx(err?.response?.data?.message || 'Failed to delete transaction');
+    }
+  };
+
+  // Start editing a transaction
+  const startEdit = (tx) => {
+    setEditingId(tx._id);
+    setEditForm({
+      date: tx.date ? tx.date.slice(0, 10) : '',
+      amount: tx.amount,
+      type: tx.type,
+      comment: tx.comment || ''
+    });
+  };
+
+  // Handle edit form input changes
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handle edit form submission
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const { date, amount, type, comment } = editForm;
+      const { data } = await transactionService.update(editingId, {
+        date,
+        amount: Number(amount),
+        type,
+        comment
+      });
+      // Update local list
+      setTransactions((prev) => prev.map((tx) => (tx._id === editingId ? data.transaction : tx)));
+      setEditingId(null);
+      setEditForm({ date: '', amount: '', type: 'expense', comment: '' });
+    } catch (err) {
+      setErrorTx(err?.response?.data?.message || 'Failed to update transaction');
+    }
+  };
+
+  // Cancel editing
+    const cancelEdit = () => {
+    setEditingId(null);
+    setEditForm({ date: '', amount: '', type: 'expense', comment: '' });
+  };
+
+  // Fetch transactions on component mount
   useEffect(() => {
     const now = new Date();
     const month = now.getMonth() + 1; // JS months are 0-based
@@ -95,12 +159,62 @@ export default function Dashboard() {
       {errorTx && <p style={{ color: 'red' }}>{errorTx}</p>}
       {!loadingTx && transactions.length === 0 && <p>No transactions for this month.</p>}
       <ul>
-        {transactions.map((tx) => (
-          <li key={tx._id}>
-            <strong>{tx.type}</strong> — {tx.amount} on {new Date(tx.date).toLocaleDateString()}
-            {tx.comment ? ` — ${tx.comment}` : ''}
-          </li>
-        ))}
+        {transactions.map((tx) => {
+          const isEditing = editingId === tx._id;
+          return (
+            <li key={tx._id}>
+              {isEditing ? (
+                <form onSubmit={handleEditSubmit} style={{ display: 'inline' }}>
+                  <input
+                    type="date"
+                    name="date"
+                    value={editForm.date}
+                    onChange={handleEditChange}
+                    required
+                  />
+                  <input
+                    type="number"
+                    name="amount"
+                    value={editForm.amount}
+                    onChange={handleEditChange}
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                  <select
+                    name="type"
+                    value={editForm.type}
+                    onChange={handleEditChange}
+                  >
+                    <option value="expense">Expense</option>
+                    <option value="income">Income</option>
+                  </select>
+                  <input
+                    type="text"
+                    name="comment"
+                    value={editForm.comment}
+                    onChange={handleEditChange}
+                    placeholder="Comment"
+                  />
+                  <button type="submit">Save</button>
+                  <button type="button" onClick={cancelEdit}>Cancel</button>
+                </form>
+              ) : (
+                <>
+                  <strong>{tx.type}</strong> — {tx.amount} on {new Date(tx.date).toLocaleDateString()}
+                  {tx.comment ? ` — ${tx.comment}` : ''}
+                  {' '}
+                  <button onClick={() => startEdit(tx)} style={{ marginLeft: '0.5rem' }}>
+                    Edit
+                  </button>
+                  <button onClick={() => handleDelete(tx._id)} style={{ marginLeft: '0.5rem' }}>
+                    Delete
+                  </button>
+                </>
+              )}
+            </li>
+          );
+        })}
       </ul>
       {/* TODO: Add calendar here */}
       {/* TODO: Add monthly analytics here */}
