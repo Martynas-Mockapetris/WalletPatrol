@@ -1,5 +1,5 @@
 import { useAuth } from '../context/AuthContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import transactionService from '../services/transactionService';
 import { useNavigate } from 'react-router-dom';
 
@@ -141,7 +141,20 @@ export default function Dashboard() {
     );
   };
 
-  const totals = getTotals(transactions);
+  // Compute monthly totals from the current transactions list
+  const totals = useMemo(() => {
+    return transactions.reduce(
+      (acc, tx) => {
+        if (tx.type === 'income') acc.income += tx.amount;
+        else if (tx.type === 'expense') acc.expense += tx.amount;
+        acc.net = acc.income - acc.expense;
+        return acc;
+      },
+      { income: 0, expense: 0, net: 0 }
+    );
+  }, [transactions]);
+
+  const formatCurrency = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR' }).format(n);
 
   // Refetch when month/year changes
   useEffect(() => {
@@ -196,7 +209,9 @@ export default function Dashboard() {
       {/* Monthly Totals */}
       <h2>Summary</h2>
       <div style={{ marginBottom: '1rem' }}>
-        <span>Income: {totals.income.toFixed(2)}</span> <span style={{ marginLeft: '1rem' }}>Expense: {totals.expense.toFixed(2)}</span> <span style={{ marginLeft: '1rem' }}>Net: {totals.net.toFixed(2)}</span>
+        <span>Income: {formatCurrency(totals.income)}</span>
+        <span>Expense: {formatCurrency(totals.expense)}</span>
+        <span style={{ color: totals.net >= 0 ? 'green' : 'red' }}>Net: {formatCurrency(totals.net)}</span>
       </div>
       {/* Transaction Form */}
       <h2>Add Transaction</h2>
