@@ -24,6 +24,10 @@ export default function Dashboard() {
     type: 'expense',
     comment: ''
   });
+  // Filter controls: selected month/year
+  const now = new Date();
+  const [month, setMonth] = useState(now.getMonth() + 1); // 1..12
+  const [year, setYear] = useState(now.getFullYear());
 
   // Handle form input changes
   const handleChange = (e) => {
@@ -105,10 +109,44 @@ export default function Dashboard() {
   };
 
   // Cancel editing
-    const cancelEdit = () => {
+  const cancelEdit = () => {
     setEditingId(null);
     setEditForm({ date: '', amount: '', type: 'expense', comment: '' });
   };
+
+  // Fetch transactions for selected month/year
+  const fetchTx = async (m, y) => {
+    setLoadingTx(true);
+    setErrorTx(null);
+    try {
+      const { data } = await transactionService.getByMonth(m, y);
+      setTransactions(data.transactions || []);
+    } catch (err) {
+      setErrorTx(err?.response?.data?.message || 'Failed to load transactions');
+    } finally {
+      setLoadingTx(false);
+    }
+  };
+
+  // Compute monthly totals from transactions
+  const getTotals = (items) => {
+    return items.reduce(
+      (acc, tx) => {
+        if (tx.type === 'income') acc.income += tx.amount;
+        if (tx.type === 'expense') acc.expense += tx.amount;
+        acc.net = acc.income - acc.expense;
+        return acc;
+      },
+      { income: 0, expense: 0, net: 0 }
+    );
+  };
+
+  const totals = getTotals(transactions);
+
+  // Refetch when month/year changes
+  useEffect(() => {
+    fetchTx(month, year);
+  }, [month, year]);
 
   // Fetch transactions on component mount
   useEffect(() => {
@@ -138,6 +176,28 @@ export default function Dashboard() {
       <p>Welcome, {user?.name}!</p>
       <p>Email: {user?.email}</p>
       <button onClick={handleLogout}>Logout</button>
+      {/* Month/Year Filters */}
+      <h2>Filters</h2>
+      <div style={{ marginBottom: '1rem' }}>
+        <label>
+          Month:{' '}
+          <select value={month} onChange={(e) => setMonth(Number(e.target.value))}>
+            {[...Array(12)].map((_, i) => (
+              <option key={i + 1} value={i + 1}>
+                {i + 1}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label style={{ marginLeft: '1rem' }}>
+          Year: <input type="number" value={year} onChange={(e) => setYear(Number(e.target.value))} min="1970" max="2100" step="1" style={{ width: '6rem' }} />
+        </label>
+      </div>
+      {/* Monthly Totals */}
+      <h2>Summary</h2>
+      <div style={{ marginBottom: '1rem' }}>
+        <span>Income: {totals.income.toFixed(2)}</span> <span style={{ marginLeft: '1rem' }}>Expense: {totals.expense.toFixed(2)}</span> <span style={{ marginLeft: '1rem' }}>Net: {totals.net.toFixed(2)}</span>
+      </div>
       {/* Transaction Form */}
       <h2>Add Transaction</h2>
       <form onSubmit={handleSubmit} style={{ marginBottom: '1rem' }}>
@@ -165,45 +225,22 @@ export default function Dashboard() {
             <li key={tx._id}>
               {isEditing ? (
                 <form onSubmit={handleEditSubmit} style={{ display: 'inline' }}>
-                  <input
-                    type="date"
-                    name="date"
-                    value={editForm.date}
-                    onChange={handleEditChange}
-                    required
-                  />
-                  <input
-                    type="number"
-                    name="amount"
-                    value={editForm.amount}
-                    onChange={handleEditChange}
-                    min="0"
-                    step="0.01"
-                    required
-                  />
-                  <select
-                    name="type"
-                    value={editForm.type}
-                    onChange={handleEditChange}
-                  >
+                  <input type="date" name="date" value={editForm.date} onChange={handleEditChange} required />
+                  <input type="number" name="amount" value={editForm.amount} onChange={handleEditChange} min="0" step="0.01" required />
+                  <select name="type" value={editForm.type} onChange={handleEditChange}>
                     <option value="expense">Expense</option>
                     <option value="income">Income</option>
                   </select>
-                  <input
-                    type="text"
-                    name="comment"
-                    value={editForm.comment}
-                    onChange={handleEditChange}
-                    placeholder="Comment"
-                  />
+                  <input type="text" name="comment" value={editForm.comment} onChange={handleEditChange} placeholder="Comment" />
                   <button type="submit">Save</button>
-                  <button type="button" onClick={cancelEdit}>Cancel</button>
+                  <button type="button" onClick={cancelEdit}>
+                    Cancel
+                  </button>
                 </form>
               ) : (
                 <>
                   <strong>{tx.type}</strong> — {tx.amount} on {new Date(tx.date).toLocaleDateString()}
-                  {tx.comment ? ` — ${tx.comment}` : ''}
-                  {' '}
+                  {tx.comment ? ` — ${tx.comment}` : ''}{' '}
                   <button onClick={() => startEdit(tx)} style={{ marginLeft: '0.5rem' }}>
                     Edit
                   </button>
