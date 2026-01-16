@@ -124,18 +124,9 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content: Two-column layout */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '320px 1fr',
-          gap: 'var(--spacing-xl)',
-          padding: 'var(--spacing-xl)',
-          maxWidth: '1400px',
-          margin: '0 auto'
-        }}
-      >
+      <div className="dashboard-grid">
         {/* Left: Calendar */}
-        <div style={{ borderRight: '1px solid #eee', paddingRight: '1rem' }}>
+        <div className="calendar-card">
           <h2>Calendar</h2>
           <SingleMonthCalendar
             year={year}
@@ -153,7 +144,6 @@ export default function Dashboard() {
             }}
           />
         </div>
-
         {/* Right: Summary, Form, Transactions */}
         <div>
           <MonthlySummary transactions={transactions} />

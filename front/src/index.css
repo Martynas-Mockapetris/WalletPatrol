@@ -82,3 +82,32 @@ h3 {
   font-weight: 600;
   margin-bottom: var(--spacing-sm);
 }
+
+/* Dashboard layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-xl);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Calendar card styling */
+.calendar-card {
+  border-right: 1px solid var(--color-border);
+  padding-right: var(--spacing-lg);
+}
+
+/* Stack on narrow screens */
+@media (max-width: 960px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .calendar-card {
+    border-right: none;
+    padding-right: 0;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--spacing-lg);
+  }
+}

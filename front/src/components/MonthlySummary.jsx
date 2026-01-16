@@ -15,21 +15,21 @@ export default function MonthlySummary({ transactions }) {
     );
   }, [transactions]);
 
-  const formatCurrency = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR' }).format(n);
+  const formatMoney = (n) => `${n.toFixed(2)} €`;
 
   return (
     <div>
       <h2>Summary</h2>
       <div style={{ marginBottom: '1rem' }}>
-        <span>Income: {formatCurrency(totals.income)}</span>
-        <span style={{ marginLeft: '1rem' }}>Expense: {formatCurrency(totals.expense)}</span>
+        <span>Income: {formatMoney(totals.income)}</span>
+        <span style={{ marginLeft: '1rem' }}>Expense: {formatMoney(totals.expense)}</span>
         <span
           style={{
             marginLeft: '1rem',
             color: totals.net >= 0 ? 'green' : 'red'
           }}
         >
-          Net: {formatCurrency(totals.net)}
+          Net: {formatMoney(totals.net)}
         </span>
       </div>
     </div>

@@ -63,6 +63,9 @@ export default function TransactionListSideBySide({ transactions, loading, error
   // Render a single transaction (shared by both columns)
   const renderTx = (tx) => {
     const isEditing = editingId === tx._id;
+
+    const formatMoney = (n) => `${n.toFixed(2)} €`;
+
     return (
       <li key={tx._id} style={{ marginBottom: '0.5rem', padding: '0.5rem', border: '1px solid #f0f0f0' }}>
         {isEditing ? (
@@ -90,7 +93,7 @@ export default function TransactionListSideBySide({ transactions, loading, error
               }}
             >
               <div style={{ display: 'flex', gap: 'var(--spacing-md)', flex: 1, alignItems: 'center' }}>
-                <div style={{ fontWeight: 'bold', minWidth: '60px' }}>{tx.amount}</div>
+                <div style={{ fontWeight: 'bold', minWidth: '60px' }}>{formatMoney(tx.amount)}</div>
                 <div style={{ fontSize: '0.9rem', color: '#666', minWidth: '80px' }}>{new Date(tx.date).toLocaleDateString()}</div>
                 <div style={{ fontSize: '0.9rem', flex: 1 }}>{tx.comment || '—'}</div>
               </div>
