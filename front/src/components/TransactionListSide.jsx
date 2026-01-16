@@ -81,16 +81,41 @@ export default function TransactionListSideBySide({ transactions, loading, error
           </form>
         ) : (
           <>
-            <div style={{ fontWeight: 'bold' }}>{tx.amount}</div>
-            <div style={{ fontSize: '0.9rem', color: '#666' }}>{new Date(tx.date).toLocaleDateString()}</div>
-            {tx.comment && <div style={{ fontSize: '0.9rem' }}>{tx.comment}</div>}
-            <div style={{ marginTop: '0.5rem' }}>
-              <button onClick={() => startEdit(tx)} style={{ marginRight: '0.5rem', fontSize: '0.85rem' }}>
-                Edit
-              </button>
-              <button onClick={() => handleDelete(tx._id)} style={{ fontSize: '0.85rem' }}>
-                Delete
-              </button>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 'var(--spacing-md)'
+              }}
+            >
+              <div style={{ display: 'flex', gap: 'var(--spacing-md)', flex: 1, alignItems: 'center' }}>
+                <div style={{ fontWeight: 'bold', minWidth: '60px' }}>{tx.amount}</div>
+                <div style={{ fontSize: '0.9rem', color: '#666', minWidth: '80px' }}>{new Date(tx.date).toLocaleDateString()}</div>
+                <div style={{ fontSize: '0.9rem', flex: 1 }}>{tx.comment || '—'}</div>
+              </div>
+              <div style={{ display: 'flex', gap: 'var(--spacing-sm)' }}>
+                <button
+                  onClick={() => startEdit(tx)}
+                  style={{
+                    fontSize: '0.85rem',
+                    background: 'var(--color-primary)',
+                    color: 'white'
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(tx._id)}
+                  style={{
+                    fontSize: '0.85rem',
+                    background: 'var(--color-danger)',
+                    color: 'white'
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </>
         )}
@@ -105,7 +130,7 @@ export default function TransactionListSideBySide({ transactions, loading, error
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
       {/* Two-column layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
         {/* Incomes column */}
         <div style={{ border: '1px solid #e0f0e0', borderRadius: '4px', padding: '1rem', background: '#f5fff5' }}>
           <h3 style={{ color: 'green' }}>Incomes ({incomes.length})</h3>
