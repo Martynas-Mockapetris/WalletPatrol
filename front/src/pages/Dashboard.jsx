@@ -3,10 +3,10 @@ import { useAuth } from '../context/AuthContext';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import transactionService from '../services/transactionService';
-import CalendarYear from '../components/CalendarYear';
 import TransactionForm from '../components/TransactionForm';
 import MonthlySummary from '../components/MonthlySummary';
 import TransactionListSide from '../components/TransactionListSide.jsx';
+import SingleMonthCalendar from '../components/SingleMonthCalendar';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -23,6 +23,8 @@ export default function Dashboard() {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
   const [calendarYear, setCalendarYear] = useState(now.getFullYear());
+
+  const MONTH_LABELS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
   // Fetch transactions for selected month/year
   useEffect(() => {
@@ -70,16 +72,39 @@ export default function Dashboard() {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Header */}
       <div style={{ padding: '1rem', borderBottom: '1px solid #eee' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
           <div>
             <h1>Dashboard</h1>
             <p>
               Welcome, {user?.name}! ({user?.email})
             </p>
           </div>
-          <div>
-            <label style={{ marginRight: '1rem' }}>
-              Calendar Year: <input type="number" value={calendarYear} onChange={(e) => setCalendarYear(Number(e.target.value))} min="1970" max="2100" step="1" style={{ width: '6rem' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <label>
+              Month:{' '}
+              <select value={month} onChange={(e) => setMonth(Number(e.target.value))}>
+                {MONTH_LABELS.map((label, idx) => (
+                  <option key={label} value={idx + 1}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Year:{' '}
+              <input
+                type="number"
+                value={year}
+                onChange={(e) => {
+                  const y = Number(e.target.value);
+                  setYear(y);
+                  setCalendarYear(y); // keep calendar in sync
+                }}
+                min="1970"
+                max="2100"
+                step="1"
+                style={{ width: '6rem' }}
+              />
             </label>
             <button onClick={handleLogout}>Logout</button>
           </div>
@@ -90,7 +115,22 @@ export default function Dashboard() {
       <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '2rem', padding: '1rem' }}>
         {/* Left: Calendar */}
         <div style={{ borderRight: '1px solid #eee', paddingRight: '1rem' }}>
-          <CalendarYear year={calendarYear} onMonthSelect={handleCalendarMonthClick} />
+          <h2>Calendar</h2>
+          <SingleMonthCalendar
+            year={year}
+            month={month}
+            monthLabel={MONTH_LABELS[month - 1]}
+            txByDay={transactions.reduce((acc, tx) => {
+              const d = new Date(tx.date);
+              const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+              acc[iso] = (acc[iso] || 0) + 1;
+              return acc;
+            }, {})}
+            onDaySelect={(iso) => {
+              // Optional: filter to that specific day later; for now just a placeholder
+              console.log('Day clicked:', iso);
+            }}
+          />
         </div>
 
         {/* Right: Summary, Form, Transactions */}
