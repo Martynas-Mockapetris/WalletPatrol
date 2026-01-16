@@ -16,13 +16,11 @@ export default function Dashboard() {
   const [transactions, setTransactions] = useState([]);
   const [loadingTx, setLoadingTx] = useState(false);
   const [errorTx, setErrorTx] = useState(null);
-  const [showTransactions, setShowTransactions] = useState(false);
 
   // Filter state
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
-  const [calendarYear, setCalendarYear] = useState(now.getFullYear());
 
   const MONTH_LABELS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -62,12 +60,6 @@ export default function Dashboard() {
     setTransactions((prev) => prev.filter((tx) => tx._id !== id));
   };
 
-  const handleCalendarMonthClick = (monthNum, yearNum) => {
-    setMonth(monthNum);
-    setYear(yearNum);
-    setShowTransactions(true); // Show transactions when month selected
-  };
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Header */}
@@ -98,7 +90,6 @@ export default function Dashboard() {
                 onChange={(e) => {
                   const y = Number(e.target.value);
                   setYear(y);
-                  setCalendarYear(y); // keep calendar in sync
                 }}
                 min="1970"
                 max="2100"
@@ -137,8 +128,7 @@ export default function Dashboard() {
         <div>
           <MonthlySummary transactions={transactions} />
           <TransactionForm onSuccess={handleAddSuccess} />
-
-          {showTransactions && <TransactionListSide transactions={transactions} loading={loadingTx} error={errorTx} onUpdate={handleUpdateTx} onDelete={handleDeleteTx} />}
+          <TransactionListSide transactions={transactions} loading={loadingTx} error={errorTx} onUpdate={handleUpdateTx} onDelete={handleDeleteTx} />{' '}
         </div>
       </div>
     </div>
