@@ -23,18 +23,18 @@ export default function SingleMonthCalendar({ year, month, monthLabel, txByDay =
   return (
     <div>
       {monthLabel && (
-        <div style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>
+        <div style={{ fontWeight: 'bold', marginBottom: 'var(--spacing-sm)' }}>
           {year} {monthLabel}
         </div>
       )}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '4px', color: '#666', fontSize: '0.85rem' }}>
+      <div className="calendar-container" style={{ marginBottom: '4px' }}>
         {WEEKDAYS.map((w) => (
-          <div key={w} style={{ textAlign: 'center' }}>
+          <div key={w} className="calendar-weekday">
             {w}
           </div>
         ))}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
+      <div className="calendar-container">
         {cells.map((cell, idx) => {
           if (cell === null) return <div key={`blank-${idx}`} />;
           const { day, iso, count } = cell;
@@ -44,12 +44,8 @@ export default function SingleMonthCalendar({ year, month, monthLabel, txByDay =
               key={iso}
               onClick={() => onDaySelect?.(iso)}
               title={hasTx ? `${count} transaction(s)` : ''}
+              className={`calendar-day ${hasTx ? 'calendar-day-with-tx' : ''}`}
               style={{
-                textAlign: 'center',
-                padding: '8px 0',
-                borderRadius: '6px',
-                border: '1px solid #eee',
-                background: hasTx ? '#d6f5d6' : '#fff',
                 cursor: onDaySelect ? 'pointer' : 'default'
               }}
             >

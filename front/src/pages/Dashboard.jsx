@@ -84,13 +84,7 @@ export default function Dashboard() {
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
               Welcome, {user?.name}! ({user?.email})
             </p>
-            <button
-              onClick={handleLogout}
-              style={{
-                background: 'var(--color-danger)',
-                color: 'white'
-              }}
-            >
+            <button onClick={handleLogout} className="btn btn-danger">
               Logout
             </button>
           </div>
@@ -124,31 +118,32 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content: Two-column layout */}
-      <div className="dashboard-grid">
-        {/* Left: Calendar */}
-        <div className="calendar-card">
-          <h2>Calendar</h2>
-          <SingleMonthCalendar
-            year={year}
-            month={month}
-            monthLabel={MONTH_LABELS[month - 1]}
-            txByDay={transactions.reduce((acc, tx) => {
-              const d = new Date(tx.date);
-              const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-              acc[iso] = (acc[iso] || 0) + 1;
-              return acc;
-            }, {})}
-            onDaySelect={(iso) => {
-              // Optional: filter to that specific day later; for now just a placeholder
-              console.log('Day clicked:', iso);
-            }}
-          />
-        </div>
-        {/* Right: Summary, Form, Transactions */}
-        <div>
-          <MonthlySummary transactions={transactions} />
-          <TransactionForm onSuccess={handleAddSuccess} />
-          <TransactionListSide transactions={transactions} loading={loadingTx} error={errorTx} onUpdate={handleUpdateTx} onDelete={handleDeleteTx} />{' '}
+      <div className="content-container">
+        <div className="dashboard-grid">
+          <div>
+            <div className="calendar-card">
+              <h2>Calendar</h2>
+              <SingleMonthCalendar
+                year={year}
+                month={month}
+                monthLabel={MONTH_LABELS[month - 1]}
+                txByDay={transactions.reduce((acc, tx) => {
+                  const d = new Date(tx.date);
+                  const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                  acc[iso] = (acc[iso] || 0) + 1;
+                  return acc;
+                }, {})}
+                onDaySelect={(iso) => console.log('Day clicked:', iso)}
+              />
+            </div>
+
+            <MonthlySummary transactions={transactions} />
+          </div>
+
+          <div>
+            <TransactionForm onSuccess={handleAddSuccess} />
+            <TransactionListSide transactions={transactions} loading={loadingTx} error={errorTx} onUpdate={handleUpdateTx} onDelete={handleDeleteTx} />
+          </div>
         </div>
       </div>
     </div>
