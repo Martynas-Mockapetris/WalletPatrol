@@ -63,47 +63,77 @@ export default function Dashboard() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Header */}
-      <div style={{ padding: '1rem', borderBottom: '1px solid #eee' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
-          <div>
-            <h1>Dashboard</h1>
-            <p>
+      <div
+        style={{
+          padding: 'var(--spacing-lg)',
+          borderBottom: '1px solid var(--color-border)',
+          background: 'var(--color-card)',
+          boxShadow: 'var(--shadow-sm)'
+        }}
+      >
+        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+          {/* Row 1: Welcome + Logout */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 'var(--spacing-md)'
+            }}
+          >
+            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
               Welcome, {user?.name}! ({user?.email})
             </p>
+            <button
+              onClick={handleLogout}
+              style={{
+                background: 'var(--color-danger)',
+                color: 'white'
+              }}
+            >
+              Logout
+            </button>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <label>
-              Month:{' '}
-              <select value={month} onChange={(e) => setMonth(Number(e.target.value))}>
-                {MONTH_LABELS.map((label, idx) => (
-                  <option key={label} value={idx + 1}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Year:{' '}
-              <input
-                type="number"
-                value={year}
-                onChange={(e) => {
-                  const y = Number(e.target.value);
-                  setYear(y);
-                }}
-                min="1970"
-                max="2100"
-                step="1"
-                style={{ width: '6rem' }}
-              />
-            </label>
-            <button onClick={handleLogout}>Logout</button>
+
+          {/* Row 2: Dashboard title + Month/Year selectors */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}
+          >
+            <h1 style={{ margin: 0 }}>Dashboard</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
+              <label style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
+                Month:{' '}
+                <select value={month} onChange={(e) => setMonth(Number(e.target.value))} style={{ marginLeft: 'var(--spacing-xs)' }}>
+                  {MONTH_LABELS.map((label, idx) => (
+                    <option key={label} value={idx + 1}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
+                Year: <input type="number" value={year} onChange={(e) => setYear(Number(e.target.value))} min="1970" max="2100" step="1" style={{ width: '6rem', marginLeft: 'var(--spacing-xs)' }} />
+              </label>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Main Content: Two-column layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '2rem', padding: '1rem' }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '320px 1fr',
+          gap: 'var(--spacing-xl)',
+          padding: 'var(--spacing-xl)',
+          maxWidth: '1400px',
+          margin: '0 auto'
+        }}
+      >
         {/* Left: Calendar */}
         <div style={{ borderRight: '1px solid #eee', paddingRight: '1rem' }}>
           <h2>Calendar</h2>
