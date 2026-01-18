@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const savingsSchema = new mongoose.Schema(
   {
@@ -26,4 +26,4 @@ const savingsSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model('Savings', savingsSchema);
+export default mongoose.model('Savings', savingsSchema);

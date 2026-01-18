@@ -7,6 +7,7 @@ import TransactionForm from '../components/TransactionForm';
 import MonthlySummary from '../components/MonthlySummary';
 import TransactionListSide from '../components/TransactionListSide.jsx';
 import SingleMonthCalendar from '../components/SingleMonthCalendar';
+import SavingsList from '../components/SavingsList';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -117,8 +118,10 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Main Content: Two-column layout */}
+      {/* Main Content: Savings on top, then two-column layout */}
       <div className="content-container">
+        <SavingsList />
+
         <div className="dashboard-grid">
           <div>
             <div className="calendar-card">
@@ -129,7 +132,7 @@ export default function Dashboard() {
                 monthLabel={MONTH_LABELS[month - 1]}
                 txByDay={transactions.reduce((acc, tx) => {
                   const d = new Date(tx.date);
-                  const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                  const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).toString().padStart(2, '0')}`;
                   acc[iso] = (acc[iso] || 0) + 1;
                   return acc;
                 }, {})}
