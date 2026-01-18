@@ -2,6 +2,9 @@ import API from './api';
 
 // Transaction API calls (mirrors your backend routes)
 const transactionService = {
+  // Get all transactions (all-time)
+  getAll: () => API.get('/transactions'),
+
   // Get transactions for a given month/year (optional filters)
   getByMonth: (month, year) => API.get('/transactions', { params: { month, year } }),
 

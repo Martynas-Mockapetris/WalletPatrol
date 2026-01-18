@@ -13,6 +13,9 @@ export default function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  // Totals state
+  const [allTotals, setAllTotals] = useState({ income: 0, expense: 0, net: 0 });
+
   // Transaction list state
   const [transactions, setTransactions] = useState([]);
   const [loadingTx, setLoadingTx] = useState(false);
@@ -42,6 +45,28 @@ export default function Dashboard() {
 
     fetchTx();
   }, [month, year]);
+
+  // Calculate all-time totals on mount
+  useEffect(() => {
+    const fetchAllTotals = async () => {
+      try {
+        const { data } = await transactionService.getAll();
+        const totals = data.transactions.reduce(
+          (acc, tx) => {
+            if (tx.type === 'income') acc.income += tx.amount;
+            else if (tx.type === 'expense') acc.expense += tx.amount;
+            return acc;
+          },
+          { income: 0, expense: 0, net: 0 }
+        );
+        totals.net = totals.income - totals.expense;
+        setAllTotals(totals);
+      } catch (err) {
+        console.error('Failed to load all-time totals', err);
+      }
+    };
+    fetchAllTotals();
+  }, []);
 
   // Handlers for child components
   const handleLogout = () => {
@@ -118,8 +143,26 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Main Content: Savings on top, then two-column layout */}
+      {/* Main Content: All-time summary, then Savings, then grid */}
       <div className="content-container">
+        <div style={{ marginBottom: 'var(--spacing-lg)' }}>
+          <h2>All-Time Summary</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Total Income</span>
+              <span>{allTotals.income.toFixed(2)} €</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Total Expense</span>
+              <span>{allTotals.expense.toFixed(2)} €</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Net</span>
+              <span style={{ color: allTotals.net >= 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>{allTotals.net.toFixed(2)} €</span>
+            </div>
+          </div>
+        </div>
+
         <SavingsList />
 
         <div className="dashboard-grid">
