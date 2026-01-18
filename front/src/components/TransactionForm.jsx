@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import transactionService from '../services/transactionService';
 
+
 export default function TransactionForm({ onSuccess }) {
   const [form, setForm] = useState({
     date: '',
@@ -36,17 +37,24 @@ export default function TransactionForm({ onSuccess }) {
   return (
     <div>
       <h2>Add Transaction</h2>
-      <form onSubmit={handleSubmit} style={{ marginBottom: '1rem' }}>
-        <input type="date" name="date" value={form.date} onChange={handleChange} required />
-        <input type="number" name="amount" placeholder="Amount" value={form.amount} onChange={handleChange} min="0" step="0.01" required />
-        <select name="type" value={form.type} onChange={handleChange}>
-          <option value="expense">Expense</option>
-          <option value="income">Income</option>
-        </select>
-        <input type="text" name="comment" placeholder="Comment (optional)" value={form.comment} onChange={handleChange} />
-        <button type="submit" disabled={saving}>
-          {saving ? 'Saving...' : 'Add'}
-        </button>
+      <form onSubmit={handleSubmit} style={{ marginBottom: 'var(--spacing-lg)' }}>
+        {/* Row 1: Date, Amount, Type */}
+        <div className="form-row">
+          <input type="date" name="date" value={form.date} onChange={handleChange} required className="form-row-flex-1" />
+          <input type="number" name="amount" placeholder="Amount" value={form.amount} onChange={handleChange} min="0" step="0.01" required className="form-row-flex-1" />
+          <select name="type" value={form.type} onChange={handleChange} className="form-row-flex-1">
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+          </select>
+        </div>
+
+        {/* Row 2: Comment, Add button */}
+        <div className="form-row">
+          <input type="text" name="comment" placeholder="Comment (optional)" value={form.comment} onChange={handleChange} className="form-row-flex-1" />
+          <button type="submit" disabled={saving} className="btn btn-primary" style={{ minWidth: '100px' }}>
+            {saving ? 'Saving...' : 'Add'}
+          </button>
+        </div>
       </form>
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>

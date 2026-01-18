@@ -15,22 +15,24 @@ export default function MonthlySummary({ transactions }) {
     );
   }, [transactions]);
 
-  const formatCurrency = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR' }).format(n);
+  const formatMoney = (n) => `${n.toFixed(2)} €`;
 
   return (
-    <div>
+    <div className="summary-block">
       <h2>Summary</h2>
-      <div style={{ marginBottom: '1rem' }}>
-        <span>Income: {formatCurrency(totals.income)}</span>
-        <span style={{ marginLeft: '1rem' }}>Expense: {formatCurrency(totals.expense)}</span>
-        <span
-          style={{
-            marginLeft: '1rem',
-            color: totals.net >= 0 ? 'green' : 'red'
-          }}
-        >
-          Net: {formatCurrency(totals.net)}
-        </span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <span>Income</span>
+          <span style={{ color: 'var(--color-success)' }}>{formatMoney(totals.income)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <span>Expense</span>
+          <span style={{ color: 'var(--color-danger)' }}>{formatMoney(totals.expense)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
+          <span>Net</span>
+          <span style={{ color: totals.net >= 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>{formatMoney(totals.net)}</span>
+        </div>
       </div>
     </div>
   );

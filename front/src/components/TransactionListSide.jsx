@@ -63,34 +63,34 @@ export default function TransactionListSideBySide({ transactions, loading, error
   // Render a single transaction (shared by both columns)
   const renderTx = (tx) => {
     const isEditing = editingId === tx._id;
+    const formatMoney = (n) => `${n.toFixed(2)} €`;
+
     return (
-      <li key={tx._id} style={{ marginBottom: '0.5rem', padding: '0.5rem', border: '1px solid #f0f0f0' }}>
+      <li key={tx._id} className="transaction-item">
         {isEditing ? (
-          <form onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <form onSubmit={handleEditSubmit} className="form-row" style={{ flexDirection: 'column', width: '100%' }}>
             <input type="date" name="date" value={editForm.date} onChange={handleEditChange} required />
             <input type="number" name="amount" value={editForm.amount} onChange={handleEditChange} min="0" step="0.01" required />
             <input type="text" name="comment" value={editForm.comment} onChange={handleEditChange} placeholder="Comment" />
-            <div>
-              <button type="submit" style={{ marginRight: '0.5rem' }}>
+            <div className="form-row">
+              <button type="submit" className="btn btn-primary">
                 Save
               </button>
-              <button type="button" onClick={cancelEdit}>
+              <button type="button" onClick={cancelEdit} className="btn">
                 Cancel
               </button>
             </div>
           </form>
         ) : (
           <>
-            <div style={{ fontWeight: 'bold' }}>{tx.amount}</div>
-            <div style={{ fontSize: '0.9rem', color: '#666' }}>{new Date(tx.date).toLocaleDateString()}</div>
-            {tx.comment && <div style={{ fontSize: '0.9rem' }}>{tx.comment}</div>}
-            <div style={{ marginTop: '0.5rem' }}>
-              <button onClick={() => startEdit(tx)} style={{ marginRight: '0.5rem', fontSize: '0.85rem' }}>
-                Edit
-              </button>
-              <button onClick={() => handleDelete(tx._id)} style={{ fontSize: '0.85rem' }}>
-                Delete
-              </button>
+            <div style={{ display: 'flex', gap: 'var(--spacing-md)', flex: 1, alignItems: 'center' }}>
+              <div className="transaction-amount">{formatMoney(tx.amount)}</div>
+              <div className="transaction-date">{new Date(tx.date).toLocaleDateString()}</div>
+              <div className="transaction-comment">{tx.comment || '—'}</div>
+            </div>
+            <div className="transaction-actions">
+              <button onClick={() => startEdit(tx)} className="btn btn-primary">Edit</button>
+              <button onClick={() => handleDelete(tx._id)} className="btn btn-danger">Delete</button>
             </div>
           </>
         )}
@@ -102,20 +102,17 @@ export default function TransactionListSideBySide({ transactions, loading, error
     <div style={{ marginTop: '2rem' }}>
       <h2>Transactions</h2>
       {loading && <p>Loading...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p style={{ color: 'var(--color-danger)' }}>{error}</p>}
 
-      {/* Two-column layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-        {/* Incomes column */}
-        <div style={{ border: '1px solid #e0f0e0', borderRadius: '4px', padding: '1rem', background: '#f5fff5' }}>
-          <h3 style={{ color: 'green' }}>Incomes ({incomes.length})</h3>
-          {incomes.length === 0 ? <p style={{ color: '#999' }}>No incomes</p> : <ul style={{ listStyle: 'none', padding: 0 }}>{incomes.map(renderTx)}</ul>}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
+        <div className="income-section">
+          <h3>Incomes ({incomes.length})</h3>
+          {incomes.length === 0 ? <p style={{ color: 'var(--color-text-muted)' }}>No incomes</p> : <ul style={{ listStyle: 'none', padding: 0 }}>{incomes.map(renderTx)}</ul>}
         </div>
 
-        {/* Expenses column */}
-        <div style={{ border: '1px solid #ffe0e0', borderRadius: '4px', padding: '1rem', background: '#fff5f5' }}>
-          <h3 style={{ color: 'red' }}>Expenses ({expenses.length})</h3>
-          {expenses.length === 0 ? <p style={{ color: '#999' }}>No expenses</p> : <ul style={{ listStyle: 'none', padding: 0 }}>{expenses.map(renderTx)}</ul>}
+        <div className="expense-section">
+          <h3>Expenses ({expenses.length})</h3>
+          {expenses.length === 0 ? <p style={{ color: 'var(--color-text-muted)' }}>No expenses</p> : <ul style={{ listStyle: 'none', padding: 0 }}>{expenses.map(renderTx)}</ul>}
         </div>
       </div>
     </div>
