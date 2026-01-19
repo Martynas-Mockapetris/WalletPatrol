@@ -80,19 +80,18 @@ export default function SavingsList() {
 
   return (
     <div style={{ marginTop: 'var(--spacing-lg)' }}>
-      <h2>Savings</h2>
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: 'var(--color-danger)' }}>{error}</p>}
 
       {/* Create new savings goal */}
-      <form onSubmit={handleCreate} className="form-row" style={{ alignItems: 'flex-end' }}>
+      <form onSubmit={handleCreate} className="form-row" style={{ alignItems: 'flex-end', marginBottom: 'var(--spacing-xl)' }}>
         <div className="form-row-flex-1 form-group">
           <label>Name</label>
-          <input type="text" value={newSaving.name} onChange={(e) => setNewSaving((p) => ({ ...p, name: e.target.value }))} placeholder="Money saved for car" required />
+          <input type="text" value={newSaving.name} onChange={(e) => setNewSaving((p) => ({ ...p, name: e.target.value }))} placeholder="Saving money for..." required />
         </div>
         <div className="form-row-flex-1 form-group">
           <label>Goal (€)</label>
-          <input type="number" value={newSaving.goalAmount} onChange={(e) => setNewSaving((p) => ({ ...p, goalAmount: e.target.value }))} min="0" step="0.01" required />
+          <input type="number" value={newSaving.goalAmount} onChange={(e) => setNewSaving((p) => ({ ...p, goalAmount: e.target.value }))} min="0" step="0.01" placeholder="Money required" required />
         </div>
         <button type="submit" className="btn btn-primary">
           Create
@@ -101,6 +100,11 @@ export default function SavingsList() {
 
       {/* List of savings */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
+        <h2>Current Goals</h2>
+        {/* Totals display (optional) */}
+        <div style={{ marginTop: 'var(--spacing-md)', color: 'var(--color-text-muted)', fontSize: '1rem' }}>
+          Total Saved: {totals.totalSaved.toFixed(2)} € | Total Goals: {totals.totalGoal.toFixed(2)} €
+        </div>
         {savings.length === 0 && <p style={{ color: 'var(--color-text-muted)' }}>No savings goals yet</p>}
         {savings.map((s) => {
           const progress = s.goalAmount ? Math.min(100, (s.currentAmount / s.goalAmount) * 100) : 0;
@@ -145,11 +149,6 @@ export default function SavingsList() {
             </div>
           );
         })}
-      </div>
-
-      {/* Totals display (optional) */}
-      <div style={{ marginTop: 'var(--spacing-md)', color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-        Total Saved: {totals.totalSaved.toFixed(2)} € | Total Goals: {totals.totalGoal.toFixed(2)} €
       </div>
     </div>
   );
