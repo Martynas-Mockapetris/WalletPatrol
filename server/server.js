@@ -2,6 +2,9 @@ import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import savingsRoutes from './routes/savings.js';
+import transactionRoutes from './routes/transactions.js';
+import authRoutes from './routes/auth.js';
 
 // Nuskaitome environment kintamuosius iš .env failo
 dotenv.config();
@@ -35,14 +38,11 @@ mongoose
   });
 
 // ========== ROUTES ==========
-// Import auth routes
-import authRoutes from './routes/auth.js';
-
 // Mount auth routes at /api/auth
 app.use('/api/auth', authRoutes);
 
-// Import transaction routes
-import transactionRoutes from './routes/transactions.js';
+// Import savings routes
+app.use('/api/savings', savingsRoutes);
 
 // Mount transaction routes at /api/transactions
 app.use('/api/transactions', transactionRoutes);
